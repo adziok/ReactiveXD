@@ -7,16 +7,16 @@ import { PipelineOperator } from './types/PipelinesOperators';
 
 export class Observable<T> implements Subscribable<T> {
     private eventEmitter = new EventEmitter<'next' | 'error' | 'complete' | 'subscribe'>();
-    private nextData: T[];
+    private dataStream: T[];
     private subscribed = false;
     private pending = false;
 
     constructor(...args: any[]) {
-        this.nextData = args;
+        this.dataStream = args;
 
         this.eventEmitter.on('subscribe', () => {
             this.subscribed = true;
-            this.nextData.forEach(v => this.eventEmitter.emit(v instanceof Error && 'error' || 'next', v));
+            this.dataStream.forEach(nextEvent => this.eventEmitter.emit(nextEvent instanceof Error && 'error' || 'next', nextEvent));
 
             this.eventEmitter.emit('complete');
         });

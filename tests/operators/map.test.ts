@@ -1,7 +1,7 @@
 import { Observable, map } from './../../src';
 
 describe('Test operator "map" on string type', () => {
-    const observable = new Observable('MapTest');
+    const observable = new Observable<string>('MapTest');
 
     const next = jest.fn();
     const error = jest.fn();
