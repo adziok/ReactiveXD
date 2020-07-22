@@ -1,7 +1,8 @@
-import { Observable, tap } from './../../src';
+import { Subject } from './../src/Subject';
+import { tap } from '../src';
 
-describe('Test operator "map" on string type', () => {
-    const observable = new Observable('TapTest');
+describe('Subject', () => {
+    const observable = new Subject('TapTest');
 
     const next = jest.fn();
     const error = jest.fn();
@@ -11,7 +12,7 @@ describe('Test operator "map" on string type', () => {
 
     observable
         .pipe(
-            tap((v: any) => tapTest('taptest'))
+            tap(console.log)
         )
         .subscribe(
             next,

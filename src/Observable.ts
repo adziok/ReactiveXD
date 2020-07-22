@@ -6,10 +6,10 @@ import { Observer } from './Observer';
 import { PipelineOperator } from './types/PipelinesOperators';
 
 export class Observable<T> implements Subscribable<T> {
-    private eventEmitter = new EventEmitter<'next' | 'error' | 'complete' | 'subscribe'>();
     private dataStream: T[];
     private subscribed = false;
-    private pending = false;
+    protected eventEmitter = new EventEmitter<'next' | 'error' | 'complete' | 'subscribe'>();
+    protected pending = false;
 
     constructor(...args: any[]) {
         this.dataStream = args;
@@ -18,7 +18,7 @@ export class Observable<T> implements Subscribable<T> {
             this.subscribed = true;
             this.dataStream.forEach(nextEvent => this.eventEmitter.emit(nextEvent instanceof Error && 'error' || 'next', nextEvent));
 
-            this.eventEmitter.emit('complete');
+            !this.pending && this.eventEmitter.emit('complete');
         });
     }
 
@@ -29,4 +29,5 @@ export class Observable<T> implements Subscribable<T> {
     public pipe(...pipelines: PipelineOperator<T>[]): Subscribable<T> {
         return new ObservableWithPipes(this.eventEmitter, pipelines);
     }
+
 }
