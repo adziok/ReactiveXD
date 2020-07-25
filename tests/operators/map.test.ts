@@ -69,7 +69,7 @@ describe('Test operator "map" on Promise type', () => {
 
     observable
         .pipe(
-            map((v: number) => v * 2)
+            map((v: any) => v * 2)
         )
         .subscribe(
             next,

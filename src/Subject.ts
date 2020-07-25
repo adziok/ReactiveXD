@@ -1,21 +1,27 @@
 import { Observable } from './Observable';
-import { Observer } from './Observer';
 
-export class Subject<T> {
-    private observers: Observer<T>[] = [];
-    private closed = false;
-    private stopped = false;
-    private errored = false;
+export class Subject<T> extends Observable<T> {
+    constructor(...args: any[]) {
+        super(...args);
 
-    constructor() {
-
+        this.pending = true;
     }
 
-    next(...data: T[]): void {
-        
+    public next(v: T) {
+        if (!this.pending) {
+            throw new Error('Subject completed');
+        }
+
+        this.eventEmitter.emit('next', v);
     }
 
-    asObservable(): Observable<T> {
-        return new Observable({  });
+    public complete() {
+        if (!this.pending) {
+            throw new Error('Already complete');
+        }
+
+        this.pending = false;
+        this.eventEmitter.emit('complete');
+        this.eventEmitter.removeAllListeners();
     }
 }
