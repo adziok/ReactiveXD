@@ -26,6 +26,10 @@ export class Observable<T> implements Subscribable<T> {
         return new Observer({ next, error, complete, eventEmitter: this.eventEmitter });
     }
 
+    public unsubscribe() {
+        // remove sub loginc
+    }
+
     public pipe(...pipelines: PipelineOperator<T>[]): Subscribable<T> {
         return new ObservableWithPipes(this.eventEmitter, pipelines);
     }

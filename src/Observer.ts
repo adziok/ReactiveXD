@@ -20,10 +20,6 @@ export class Observer<T> implements Unsubscribable {
 
         eventEmitter.emit('subscribe');
     }
-
-    unsubscribe() {
-        // remove sub loginc
-    }
 }
 
 interface ObserverConstructorParams<T> {
