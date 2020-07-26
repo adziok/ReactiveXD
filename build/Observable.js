@@ -1,52 +1,40 @@
-import { ObservableWithPipes } from './ObservableWithPipe';
-import { EventEmitter } from './EvenEmmiter';
-import { Subscribable } from './types/Subscribable';
-import { Unsubscribable } from './types/Unsubscribable';
-import { Observer } from './Observer';
-import { PipelineOperator } from './types/PipelinesOperators';
-
-export class Observable<T> implements Subscribable<T> {
-    private subscribed = false;
-    private eventEmitter = new EventEmitter<'next' | 'error' | 'complete' | 'subscribe'>();
-    private pending = false;
-    private _source: T[];
-
-    constructor(...args: T[]) {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+const ObservableWithPipe_1 = require("./ObservableWithPipe");
+const EvenEmmiter_1 = require("./EvenEmmiter");
+const Observer_1 = require("./Observer");
+class Observable {
+    constructor(...args) {
+        this.subscribed = false;
+        this.eventEmitter = new EvenEmmiter_1.EventEmitter();
+        this.pending = false;
         this._source = [...args];
-
         this.eventEmitter.once('subscribe', () => this.handleSubscribeEvent());
     }
-
-    public subscribe(next?: (value: T) => void, error?: (error: any) => void, complete?: () => void): Unsubscribable {
-        return new Observer({ next, error, complete, eventEmitter: this.eventEmitter });
+    subscribe(next, error, complete) {
+        return new Observer_1.Observer({ next, error, complete, eventEmitter: this.eventEmitter });
     }
-
-    public pipe(...pipelines: PipelineOperator<T>[]): Subscribable<T> {
-        return new ObservableWithPipes(this.eventEmitter, pipelines);
+    pipe(...pipelines) {
+        return new ObservableWithPipe_1.ObservableWithPipes(this.eventEmitter, pipelines);
     }
-
     /**
      * Call when Observer start subscribing data source
      *
      * @private
      * @memberof Observable
      */
-    private handleSubscribeEvent() {
+    handleSubscribeEvent() {
         this.subscribed = true;
-
         while (this._source.length > 0) {
             this.emitNextEvent(this._source.shift());
         }
     }
-
-    private emitNextEvent(nextEvent: T | Error) {
+    emitNextEvent(nextEvent) {
         this.eventEmitter.emit(nextEvent instanceof Error && 'error' || 'next', nextEvent);
-
         if (!this.pending && this._source.length === 0) {
             this.eventEmitter.emit('complete');
         }
     }
-
     /**
      * @internal
      *
@@ -57,14 +45,13 @@ export class Observable<T> implements Subscribable<T> {
      * @returns
      * @memberof Observable
      */
-    private close() {
+    close() {
         return () => {
             this.pending = false;
             this.eventEmitter.emit('complete');
             this.eventEmitter.removeAllListeners();
         };
     }
-
     /**
      * @internal
      *
@@ -75,12 +62,11 @@ export class Observable<T> implements Subscribable<T> {
      * @private
      * @memberof Observable
      */
-    private pushEvent() {
-        return (val: T) => {
+    pushEvent() {
+        return (val) => {
             this.eventEmitter.emit('next', val);
         };
     }
-
     /**
      * @internal
      *
@@ -94,10 +80,9 @@ export class Observable<T> implements Subscribable<T> {
      * @returns
      * @memberof Observable
      */
-    static create<T>(dataSource: T[]) {
-        const observable = new Observable<T>(...dataSource);
+    static create(dataSource) {
+        const observable = new Observable(...dataSource);
         observable.pending = true;
-
         return {
             next: observable.pushEvent(),
             close: observable.close(),
@@ -105,3 +90,4 @@ export class Observable<T> implements Subscribable<T> {
         };
     }
 }
+exports.Observable = Observable;

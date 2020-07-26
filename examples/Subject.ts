@@ -1,17 +1,19 @@
+import { Observable } from './../src/Observable';
 import { Subject } from '../src/Subject';
 import { tap } from '../src';
 
 const subject = new Subject('TapTest');
 
-setInterval(() => {
+const a = setInterval(() => {
     subject.next('Test');
 }, 200);
 
 setTimeout(() => {
-    subject.complete();
+    clearInterval(a)
 }, 2000);
 
 subject
+    .asObservable()
     .pipe(
         tap(console.log)
     )

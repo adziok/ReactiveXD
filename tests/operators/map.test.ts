@@ -1,4 +1,4 @@
-import { Observable, map } from './../../src';
+import { Observable, map, tap } from './../../src';
 
 describe('Test operator "map" on string type', () => {
     const observable = new Observable<string>('MapTest');

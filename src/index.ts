@@ -1,5 +1,7 @@
+import * as operators from './pipeline-operators';
+
 export { Observer } from './Observer';
 export { ObservableWithPipes } from './ObservableWithPipe';
 export { Observable } from './Observable';
-
-export * from './pipeline-operators';
+export { Subject } from './Subject';
+export { operators };
